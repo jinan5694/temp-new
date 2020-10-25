@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+import { NProgress } from '@/plugins/nprogress'
+import nProgress from 'nprogress'
 
 Vue.use(VueRouter)
 
@@ -30,10 +32,16 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   // ...
   console.log('beforEach')
+  NProgress.start()
   setTimeout(() => {
     console.log('before next')
     next()
   }, 2000)
+})
+router.afterEach((to, from) => {
+  //
+  console.log(from)
+  nProgress.done()
 })
 
 export default router
