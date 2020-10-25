@@ -15,3 +15,10 @@ userLayout
 blankLayout
 
 angular是给路由加守卫（guade）
+
+initData
+
+可以访问路由 - canActivate
+可以访问子路由 - canActivateChild
+处理未保存的更改
+预先获取组件数据
