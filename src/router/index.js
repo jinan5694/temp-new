@@ -19,16 +19,13 @@ const routes = [
       },
       {
         path: 'systemUser',
-        component: () => import('@/views/dashboard/index.vue')
+        component: () => import('@/views/system/user/index.vue')
       }
     ]
   },
   {
     path: '/about',
     name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () => import('../views/About.vue'),
     ...guardAuth()
   }
@@ -41,17 +38,10 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  // ...
-  console.log('beforEach')
   NProgress.start()
-  setTimeout(() => {
-    console.log('before next')
-    next()
-  }, 2000)
+  next()
 })
-router.afterEach((to, from) => {
-  //
-  console.log(from)
+router.afterEach(() => {
   NProgress.done()
 })
 
