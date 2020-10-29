@@ -32,3 +32,24 @@ if (token) {
 可以访问子路由 - canActivateChild
 处理未保存的更改
 预先获取组件数据
+
+```
+// 是否可以访问
+if (canActivate) {
+  next()
+} else {
+  next('/login')
+  // or
+  next('/304')
+}
+```
+系统初始化不在basicLayout 或 ready 中做
+
+用例
+basicLayout
+blankLayout
+
+beforeEach中根据meta信息判断
+beforEnter
+
+

@@ -12,6 +12,11 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home,
+    beforeEnter: (to, from, next) => {
+      setTimeout(() => {
+        next()
+      }, 2000)
+    },
     children: [
       {
         path: 'dashboard',
