@@ -4,7 +4,10 @@
 
 <script>
 export default {
-  name: 'Register'
+  name: 'Register',
+  config: {
+    isManuallyRegistered: true
+  }
 }
 </script>
 

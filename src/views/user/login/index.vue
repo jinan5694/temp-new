@@ -8,6 +8,9 @@
 <script>
 import { ref } from '@vue/composition-api'
 export default {
+  config: {
+    isManuallyRegistered: true
+  },
   setup(props, ctx) {
     const value = ref(null)
     function login() {

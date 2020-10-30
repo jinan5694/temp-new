@@ -1,7 +1,7 @@
 import { NProgress } from '@/plugins/nprogress'
+import store from '@/store'
 
 export function beforeEach(to, from, next) {
-  console.log(to.path)
   NProgress.start()
   // 是否需要登录后访问
   const isRequiresAuth = to.matched.some(record => record.meta.isRequiresAuth)
@@ -26,6 +26,16 @@ export function beforeEach(to, from, next) {
 export function afterEach(to) {
   NProgress.done()
   window.document.title = to.meta.title
+}
+
+export function initDataGuard(to, from, next) {
+  if (store.state.currentUser) {
+    next()
+  } else {
+    store.dispatch('setCurrentUser', () => {
+      next()
+    })
+  }
 }
 
 // 分离请求数据逻辑

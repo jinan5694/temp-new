@@ -1,11 +1,16 @@
-//
+// 基本的路由配置
+import autoRegisteredRoutes from '@/router/auto-register'
+import { initDataGuard } from './guard'
 
 const routes = [
+  // 无layout的页面
   {
     path: '/about',
     name: 'About',
-    component: () => import('@/views/About.vue')
+    component: () => import('@/views/About.vue'),
+    beforeEnter: initDataGuard
   },
+  // user-layout
   {
     path: '/user',
     component: () => import('@/layouts/user-layout.vue'),
@@ -26,9 +31,11 @@ const routes = [
       }
     ]
   },
+  // basic-layout
   {
     path: '/',
     component: () => import('@/layouts/basic-layout.vue'),
+    beforeEnter: initDataGuard,
     meta: {
       isRequiresAuth: true
     },
@@ -42,10 +49,7 @@ const routes = [
         name: 'dashboard',
         component: () => import('@/views/dashboard/index.vue')
       },
-      {
-        path: 'systemUser',
-        component: () => import('@/views/system/user/index.vue')
-      },
+      ...autoRegisteredRoutes,
       {
         path: '*',
         name: 'notFound',
