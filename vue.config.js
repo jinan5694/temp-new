@@ -13,5 +13,8 @@ module.exports = {
         ws: true
       }
     }
+  },
+  configureWebpack: {
+    devtool: 'source-map'
   }
 }

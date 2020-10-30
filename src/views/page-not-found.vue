@@ -1,5 +1,5 @@
 <template>
-  <div>login</div>
+  <div>page not found</div>
 </template>
 
 <script>
