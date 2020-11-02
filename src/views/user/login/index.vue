@@ -1,14 +1,14 @@
 <template>
   <el-form
-    ref="loginForm"
-    :model="loginForm"
+    ref="formRef"
+    :model="model"
     :rules="rules"
     @keydown.enter.native="handleEnter"
   >
     <el-form-item :label="$t('login.account')" prop="account">
       <el-input
-        ref="account"
-        v-model="loginForm.account"
+        ref="accountRef"
+        v-model="model.account"
         size="medium"
         :placeholder="$t('login.account')"
         prefix-icon="el-icon-user"
@@ -16,7 +16,7 @@
     </el-form-item>
     <el-form-item :label="$t('login.password')" prop="password">
       <el-input
-        v-model="loginForm.password"
+        v-model="model.password"
         size="medium"
         type="password"
         :placeholder="$t('login.password')"
@@ -24,7 +24,7 @@
       />
     </el-form-item>
     <el-form-item>
-      <el-checkbox v-model="loginForm.checked">{{
+      <el-checkbox v-model="model.checked">{{
         $t('login.remember')
       }}</el-checkbox>
       <el-link style="float: right;">{{ $t('login.forget') }}</el-link>
@@ -40,71 +40,92 @@
   </el-form>
 </template>
 <script>
-import qs from 'qs'
+import { onMounted, reactive, ref } from '@vue/composition-api'
+import { instance } from '@/plugins/axios'
+import md5 from 'js-md5'
 // import { setToken } from '@/utils/token'
 // import api from '@/api'
 export default {
   name: 'LoginForm',
-  data() {
-    return {
-      loading: false,
-      loginForm: {
-        account: 'system',
-        password: 'system',
-        checked: true
-      }
+  setup(props, { root }) {
+    const loading = ref(false)
+    const model = reactive({
+      account: 'system',
+      password: 'system',
+      checked: true
+    })
+    // refs
+    const formRef = ref(null)
+    const accountRef = ref(null)
+
+    const rules = {
+      account: [
+        {
+          required: true,
+          message: root.$t('login.accountRequired'),
+          trigger: 'blur'
+        }
+      ],
+      password: [
+        {
+          required: true,
+          message: root.$t('login.passwordRequired'),
+          trigger: 'blur'
+        }
+      ]
     }
-  },
-  computed: {
-    rules() {
-      return {
-        account: [
-          {
-            required: true,
-            message: this.$t('login.accountRequired'),
-            trigger: 'blur'
-          }
-        ],
-        password: [
-          {
-            required: true,
-            message: this.$t('login.passwordRequired'),
-            trigger: 'blur'
-          }
-        ]
-      }
-    }
-  },
-  mounted() {
-    this.$refs.account.focus()
-  },
-  methods: {
-    submit() {
-      this.$refs.loginForm.validate(valid => {
+
+    onMounted(() => {
+      accountRef.value.focus()
+    })
+
+    function submit() {
+      formRef.value.validate(valid => {
         if (valid) {
-          this.login()
+          login()
         }
       })
-    },
-    login() {
-      this.loading = true
-      const params = {
-        username: this.loginForm.account,
-        password: this.loginForm.password,
-        grant_type: 'password',
-        scope: 'web',
-        client_id: 'web',
-        client_secret: 'web'
-      }
-      const query = qs.stringify(params)
-      console.log(query)
-      // this.$axios.post(api.login + '?' + query).then(data => {
-      //   setToken(data.access_token)
-      //   this.$router.push('/')
-      // })
-    },
-    handleEnter() {
-      this.login()
+    }
+
+    function login() {
+      loading.value = true
+
+      const params = new URLSearchParams()
+      params.append('username', model.account)
+      params.append('password', md5(model.password))
+      params.append('grant_type', 'password')
+      params.append('scope', 'web')
+      params.append('client_id', 'web')
+      params.append('client_secret', 'web')
+
+      instance
+        .post('/auth/oauth/token', params, {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        })
+        .then(data => {
+          localStorage.setItem('token', data.access_token)
+          root.$router.push({ name: 'dashboard' })
+        })
+        .catch(error => {
+          root.$message.error(error.message)
+        })
+        .finally(() => {
+          loading.value = false
+        })
+    }
+
+    function handleEnter() {
+      login()
+    }
+
+    return {
+      loading,
+      model,
+      formRef,
+      accountRef,
+      rules,
+      submit,
+      handleEnter
     }
   }
 }
